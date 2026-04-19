@@ -1,0 +1,51 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "32065:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - bikekeeper
+    networks:
+      - bikekeeper
+
+  bikekeeper:
+    build: ./bikeKeeper
+    expose:
+      - "8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ./bikeKeeper/.env
+    networks:
+      - bikekeeper
+
+  ocr-service:
+    build: ./OCR_Plate
+    expose:
+      - "5000"
+    networks:
+      - bikekeeper
+
+  postgres:
+    image: postgres:17-alpine
+    env_file:
+      - ./bikeKeeper/.env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bikekeeper"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bikekeeper
+
+networks:
+  bikekeeper:
+    driver: bridge
+
+volumes:
+  pgdata:
