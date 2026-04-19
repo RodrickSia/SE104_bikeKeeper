@@ -1,0 +1,6 @@
+[submodule "bikeKeeper"]
+	path = bikeKeeper
+	url = https://github.com/RodrickSia/bikeKeeper.git
+[submodule "OCR_Plate"]
+	path = OCR_Plate
+	url = https://github.com/RodrickSia/OCR_Plate.git
